@@ -1,11 +1,16 @@
+import { head, flattenDeep } from 'lodash'
 import { parseListOfNewsUrls } from './core/parsers'
+import {watchChangesFactory} from './core/watch-changes'
+import {ParsedOutput} from './types'
 
-// parseListOfNewsUrls('https://www.pravda.com.ua/news/2019/07/3/7219952/')
-//   .then(page => {
-//     console.log(page)
-//   })
+const watcher = watchChangesFactory<ParsedOutput[]>(
+  parseListOfNewsUrls,
+  (values: ParsedOutput[]) => head(flattenDeep(values)),
+  () => new Date().getDay() > 6,
+  3000
+)
 
-parseListOfNewsUrls('https://www.pravda.com.ua/archives/date_06072019/')
-  .then(page => {
-    console.log(page)
+watcher('https://www.pravda.com.ua/archives/date_06072019/')
+  .subscribe((a) => {
+    console.log(a)
   })
