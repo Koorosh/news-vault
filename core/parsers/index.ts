@@ -1,0 +1,1 @@
+export * from './pravda_com_ua'
