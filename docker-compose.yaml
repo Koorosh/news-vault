@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+#  redis:
+#    image: redis
+#    volumes:
+#      - redis-storage:/data
+  db:
+    image: postgres
+    volumes:
+      - postgres-storage:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: vault
+    ports:
+      - 5432:5432
+  mq:
+    image: rabbitmq:3-management
+    volumes:
+      - mq-storage:/var/lib/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+volumes:
+  redis-storage:
+    driver: local
+  postgres-storage:
+    driver: local
+  mq-storage:
+    driver: local

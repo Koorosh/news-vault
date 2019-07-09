@@ -2,17 +2,27 @@
   "name": "news-vault",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "dev": "node -r ts-node/register -r dotenv/config index.ts"
+  },
   "repository": "git@gitlab.com:avorobiov/news-vault.git",
   "author": "Andrii Vorobiov <and.vorobiov@gmail.com>",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "amqplib": "^0.5.3",
+    "dotenv": "^8.0.0",
+    "idx": "^2.5.6",
+    "knex": "^0.18.3",
     "lodash": "^4.17.11",
+    "moment": "^2.24.0",
+    "pg": "^7.11.0",
     "puppeteer": "^1.18.1",
     "rxjs": "^6.5.2",
     "yaml": "^1.6.0"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.5.13",
     "@types/lodash": "^4.14.135",
     "@types/node": "^12.0.12",
     "@types/puppeteer": "^1.12.4",

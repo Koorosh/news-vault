@@ -1,16 +1,34 @@
-import { head, flattenDeep } from 'lodash'
-import { parseListOfNewsUrls } from './core/parsers'
-import {watchChangesFactory} from './core/watch-changes'
+import moment from 'moment'
+import {getParserByType} from './core/parsers'
+import { watchPageFactory } from './core/watch-changes'
+import {from} from 'rxjs'
+import {filter, map, switchMap, tap} from 'rxjs/operators'
+import {Page, upsertPage} from './models'
 import {ParsedOutput} from './types'
+import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/sqs'
 
-const watcher = watchChangesFactory<ParsedOutput[]>(
-  parseListOfNewsUrls,
-  (values: ParsedOutput[]) => head(flattenDeep(values)),
-  () => new Date().getDay() > 6,
-  3000
-)
-
-watcher('https://www.pravda.com.ua/archives/date_06072019/')
-  .subscribe((a) => {
-    console.log(a)
+listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
+  .pipe(
+    switchMap((msg: WatchPageMsg) => {
+      const { url, type, taskId } = msg
+      const watchUntilDate = moment().endOf('day').toDate().getTime()
+      const watcher = watchPageFactory(
+        getParserByType(type),
+        () => new Date().getTime() < watchUntilDate,
+        2000
+      )
+      return watcher(url)
+        .pipe(
+          map<Array<ParsedOutput>, Page>(content => ({
+            url,
+            content: JSON.stringify(content)
+          })),
+          switchMap((page: Page) => from(upsertPage(page))),
+          filter(pageId => pageId !== null),
+          tap(pageId => publishToQueue(Queues.PARSED_PAGE, { taskId, pageId }))
+        )
+    }),
+  )
+  .subscribe((pageId) => {
+    console.log('pageId', pageId)
   })
