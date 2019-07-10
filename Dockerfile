@@ -22,6 +22,7 @@ RUN apk update \
         ttf-freefont@edge
 
 WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/knexfile.ts ./knexfile.ts
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/lib ./lib
 COPY --from=build /usr/src/app/package.json ./package.json
