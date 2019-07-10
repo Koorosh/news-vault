@@ -6,6 +6,7 @@
     "start": "node lib/index.js",
     "dev": "node -r ts-node/register -r dotenv/config src/index.ts",
     "build": "rm -rf ./lib && tsc",
+    "run:migrate": "knex migrate:latest",
     "heroku:push": "heroku container:push worker -a media-crawler",
     "heroku:deploy": "heroku container:release worker -a media-crawler",
     "docker:build": "docker build -t news-watcher .",
