@@ -14,8 +14,7 @@ listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
       const watchUntilDate = moment().endOf('day').toDate().getTime()
       const watcher = watchPageFactory(
         getParserByType(type),
-        () => new Date().getTime() < watchUntilDate,
-        2000
+        () => new Date().getTime() < watchUntilDate
       )
       return watcher(url)
         .pipe(
