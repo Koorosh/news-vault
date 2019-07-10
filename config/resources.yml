@@ -1,9 +1,0 @@
-
-resources:
-  pravda:
-    name: pravda
-    schemas:
-      - archive:
-        url: https://www.pravda.com.ua/sitemap/sitemap-archive.xml
-      - lastest: 
-        url: 

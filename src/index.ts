@@ -5,7 +5,7 @@ import {from} from 'rxjs'
 import {filter, map, switchMap, tap} from 'rxjs/operators'
 import {Page, upsertPage} from './models'
 import {ParsedOutput} from './types'
-import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/sqs'
+import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/amqp'
 
 listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
   .pipe(
