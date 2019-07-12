@@ -1,15 +1,17 @@
 import moment from 'moment'
 import {getParserByType} from './core/parsers'
-import { watchPageFactory } from './core/watch-changes'
+import {watchPageFactory} from './core/watch-changes'
 import {from} from 'rxjs'
 import {delay, filter, map, mergeMap, retryWhen, switchMap, tap} from 'rxjs/operators'
 import {Page, upsertPage} from './models'
 import {ParsedOutput} from './types'
 import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/amqp'
+import {logger, LogLevel} from './config/logger'
 
+logger.info('Start watching...')
 listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
   .pipe(
-    tap(() => console.info('Start watching...')),
+    tap(() => logger.info('Start watching...')),
     mergeMap((msg: WatchPageMsg) => {
       const { url, type, taskId } = msg
       const watchUntilDate = moment().endOf('day').toDate().getTime()
@@ -30,12 +32,12 @@ listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
     }),
     retryWhen(errors =>
       errors.pipe(
-        tap(console.error),
-        tap(() => console.log('Restart within 5 sec.')),
+        tap((error) => logger(LogLevel.ERROR, error)),
+        tap(() => logger(LogLevel.INFO, 'Restart within 5 sec.')),
         delay(5000)
       ))
   )
   .subscribe(
-    pageId => console.log('pageId', pageId),
-    error => console.error(`Process failed with error: ${error.message}`),
-    () => console.info('Stop watching!'))
+    pageId => logger.info({pageId}),
+    error => logger.error({error}),
+    () => logger.info('Stop watching!'))
