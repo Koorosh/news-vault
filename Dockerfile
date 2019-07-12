@@ -1,11 +1,13 @@
 FROM node:10-alpine AS build
 WORKDIR /usr/src/app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
-COPY knexfile.ts ./
+COPY knexfile.js ./
 COPY tsconfig.json ./
 COPY package.json ./
 COPY yarn.lock ./
+COPY migrations ./migrations
 COPY src ./src
+
 RUN yarn && yarn build
 
 FROM node:10-alpine
@@ -19,12 +21,14 @@ RUN apk update \
         freetype@edge \
         freetype-dev@edge \
         harfbuzz@edge \
-        ttf-freefont@edge
+        ttf-freefont@edge \
+        nano
 
 WORKDIR /usr/src/app
-COPY --from=build /usr/src/app/knexfile.ts ./knexfile.ts
+COPY --from=build /usr/src/app/knexfile.js ./knexfile.js
 COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/migrations ./migrations
 COPY --from=build /usr/src/app/lib ./lib
 COPY --from=build /usr/src/app/package.json ./package.json
-EXPOSE 8080
+COPY --from=build /usr/src/app/yarn.lock ./yarn.lock
 CMD [ "yarn", "start" ]

@@ -7,5 +7,6 @@ yarn-error.log*
 lerna-debug.log*
 .idea
 node_modules
-.env
 lib
+.env
+prod.env

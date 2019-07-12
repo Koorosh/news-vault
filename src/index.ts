@@ -7,6 +7,7 @@ import {Page, upsertPage} from './models'
 import {ParsedOutput} from './types'
 import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/amqp'
 
+console.info('Start watching...')
 listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
   .pipe(
     switchMap((msg: WatchPageMsg) => {

@@ -1,8 +1,6 @@
-import * as Knex from 'knex'
-
 const tableName = 'pages'
 
-export async function up(knex: Knex): Promise<any> {
+exports.up = function(knex) {
   return knex.schema.createTable(tableName, (t) => {
     t.increments()
     t.string('url')
@@ -11,10 +9,11 @@ export async function up(knex: Knex): Promise<any> {
     t.jsonb('content')
     t.timestamps(true, true)
   })
-}
+};
 
-export async function down(knex: Knex): Promise<any> {
+exports.down = function(knex) {
   return knex.schema
     .dropTable(tableName)
-}
+};
+
 
