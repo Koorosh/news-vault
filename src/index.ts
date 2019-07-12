@@ -2,7 +2,7 @@ import moment from 'moment'
 import {getParserByType} from './core/parsers'
 import { watchPageFactory } from './core/watch-changes'
 import {from} from 'rxjs'
-import {delay, filter, map, retryWhen, switchMap, tap} from 'rxjs/operators'
+import {delay, filter, map, mergeMap, retryWhen, switchMap, tap} from 'rxjs/operators'
 import {Page, upsertPage} from './models'
 import {ParsedOutput} from './types'
 import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/amqp'
@@ -10,7 +10,7 @@ import {listenToQueue, publishToQueue, Queues, WatchPageMsg} from './config/amqp
 listenToQueue<WatchPageMsg>(Queues.WATCH_PAGE)
   .pipe(
     tap(() => console.info('Start watching...')),
-    switchMap((msg: WatchPageMsg) => {
+    mergeMap((msg: WatchPageMsg) => {
       const { url, type, taskId } = msg
       const watchUntilDate = moment().endOf('day').toDate().getTime()
       const watcher = watchPageFactory(
