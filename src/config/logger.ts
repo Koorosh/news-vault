@@ -31,9 +31,10 @@ logger.error = (message: LogMessage) => {
 }
 
 export function logger(logLevel: LogLevel, message: LogMessage): void {
-  leLogger.log(logLevel, message)
-
   if (process.env.NODE_ENV === 'development') {
     console.log(message)
+  }
+  else {
+    leLogger.log(logLevel, message)
   }
 }

@@ -21,15 +21,17 @@ export async function savePage(page: Page): Promise<number> {
     .then(([{id}]) => id)
 }
 
-export async function upsertPage(page: Page): Promise<number | null> {
-  const { id, content } = await db<PageRecord>(Tables.PAGES)
+export async function upsertPage(page: Page): Promise<number> {
+  const record = await db<PageRecord>(Tables.PAGES)
     .where({ url: page.url})
-    .first()
     .returning(['id', 'content'])
+    .first()
 
-  if (isEqual(page.content, content)) return null
+  if (record) {
+    const { id, content } = record
 
-  if ( id ) {
+    if (isEqual(page.content, content)) return null
+
     return db<PageRecord>(Tables.PAGES)
       .update(page)
       .where({ id })
@@ -38,4 +40,10 @@ export async function upsertPage(page: Page): Promise<number | null> {
   }
 
   return savePage(page)
+}
+
+export function getPageById(pageId: number): Promise<PageRecord> {
+  return db<PageRecord>(Tables.PAGES)
+    .where({ id: pageId })
+    .first()
 }

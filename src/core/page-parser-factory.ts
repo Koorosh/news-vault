@@ -8,6 +8,8 @@ export function pageParserFactory(parsers: NodeParser[], ...args: SerializableOr
     const browser = await getBrowser()
     const page = await browser.newPage()
     await page.goto(url)
-    return Promise.all(parsers.map((parserFn) => page.evaluate(parserFn, ...args)))
+    const results = await Promise.all(parsers.map((parserFn) => page.evaluate(parserFn, ...args)))
+    await page.close()
+    return results
   }
 }

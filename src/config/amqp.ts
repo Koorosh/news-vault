@@ -13,6 +13,11 @@ export type WatchPageMsg = {
   type: ParserTypes
 }
 
+export type ParsePageMsg = {
+  taskId: string
+  pageId: string
+}
+
 const host = process.env.AMQP_HOST || 'amqp://localhost'
 
 const connection: Promise<amqplib.Channel> = amqplib.connect(host)
@@ -31,7 +36,7 @@ export function listenToQueue<T>(queue: Queues): Observable<T> {
       if (msg) {
         const data: T = JSON.parse(msg.content.toString())
         source$.next(data)
-        channel.ack(msg)
+        // channel.ack(msg) // TODO: has to be ack after handling in code.
       }
     })
   })
